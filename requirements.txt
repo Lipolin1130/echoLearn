@@ -1,0 +1,18 @@
+# Django 及 Django REST Framework
+Django>=5.1
+djangorestframework>=3.15.0
+
+# MySQL 連接（使用 mysqlclient 或 PyMySQL）
+mysqlclient>=2.2.0  # MySQL 官方驅動
+# 或者使用 PyMySQL（擇一）
+# PyMySQL>=1.1.0
+
+# 環境變數管理
+python-dotenv>=1.0.1
+
+# OpenAPI Swagger 文件（drf-spectacular）
+drf-spectacular>=0.27.0
+drf-spectacular-sidecar>=2024.1.0
+
+# 其他可能需要的套件
+gunicorn>=21.2.0  # 若要部署到伺服器時使用
