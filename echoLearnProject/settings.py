@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'drf_spectacular',
-    
+    'drf_yasg',
     'api'
 ]
 
@@ -143,18 +143,19 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY', "default-secret-key")
 
-PORT = int(os.getenv('PORT', 8000))
+PORT = os.getenv('PORT', '8081')
+PORT = int(PORT) if PORT.isdigit() else 8081
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'django_db'),
-        'USER': os.getenv('DB_USER', 'django_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'django_password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.getenv('DB_NAME', 'django_db'),
+#         'USER': os.getenv('DB_USER', 'django_user'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'django_password'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '3306'),
+#         'OPTIONS': {
+#             'charset': 'utf8mb4',
+#         },
+#     }
+# }

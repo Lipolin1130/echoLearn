@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import TestModel
-
-class TestModelSerializer(serializers.ModelSerializer):
+from .models import PronunciationAssessment
+  
+class PronunciationAssessmentSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = TestModel
+		model = PronunciationAssessment
 		fields = '__all__'

@@ -1,10 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from . import views  # 確保這個 View 存在
-
-router = DefaultRouter()
-router.register(r'test', views.TestModelViewSet)
+from django.urls import path
+from .views import PronunciationAssessmentView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('evaluate/', PronunciationAssessmentView.as_view(), name='pronunciation-evaluate'),
 ]
