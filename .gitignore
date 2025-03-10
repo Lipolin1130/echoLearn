@@ -1,6 +1,17 @@
 
-.env
+*.env
+
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+
+api/migrations/
+api/__pycache__/
+echoLearnProject/__pycache__/
+
+uploads/
+
 *.sqlite3
+
+staticfiles/
