@@ -3,7 +3,6 @@ import os
 
 def evaluate_pronunciation(audio_path, reference_text):
   try:
-    
     speech_config = speechsdk.SpeechConfig(
       subscription=os.environ.get("AZURE_SPEECH_KEY"),
       region=os.environ.get("AZURE_SPEECH_REGION")
@@ -46,3 +45,6 @@ def evaluate_pronunciation(audio_path, reference_text):
     return {
 			"error": str(e)
 		}
+  finally:
+    if os.path.exists(audio_path):
+      os.remove(audio_path)

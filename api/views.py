@@ -8,6 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .models import PronunciationAssessment
 from .serializers import PronunciationAssessmentSerializer
 from .azure_speech import evaluate_pronunciation
+import os
 
 class PronunciationAssessmentView(APIView):
 	parser_classes = (MultiPartParser, FormParser)
@@ -49,6 +50,7 @@ class PronunciationAssessmentView(APIView):
 		full_audio_path = default_storage.path(audio_path)
 		
 		result = evaluate_pronunciation(full_audio_path, reference_text)
+
   
 		if "error" in result:
 			return Response(result, status=400)
