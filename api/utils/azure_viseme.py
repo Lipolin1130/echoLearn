@@ -1,1 +1,0 @@
-import azure.cognitiveservices.speech as speechsdk

@@ -6,11 +6,12 @@ from django.core.files.base import ContentFile
 from django.http import FileResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .models import PronunciationAssessment
-from .serializers import PronunciationAssessmentSerializer
+from .models import PronunciationAssessment, VisemeData, VisemeResult
+from .serializers import PronunciationAssessmentSerializer, VisemeResultSerializer
 
 from .utils.azure_speech_evaluate import evaluate_pronunciation
 from .utils.azure_speech import generate_speech
+import json
 
 class PronunciationAssessmentView(APIView):
 	parser_classes = (MultiPartParser, FormParser)
@@ -93,3 +94,47 @@ class TextToSpeechView(APIView):
       return FileResponse(open(audio_path, "rb"), as_attachment=True, filename="tts_output.wav")
     else:
       return Response({"error": "語音合成失敗"}, status=500)
+    
+class VisemeSyncView(APIView):
+  """
+  產生語音並返回 Viseme (嘴形動畫同步數據)
+  """
+  
+  @swagger_auto_schema(
+		operation_summary="文字轉語音 + Viseme 嘴形同步",
+		operation_description="使用 Azure Speech 產生語音並提取 Viseme 嘴型同步數據",
+		manual_parameters=[
+			openapi.Parameter(
+				'text',
+				openapi.IN_QUERY,
+				description="要轉換為語音的文字",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+		],
+		responses={
+			200: VisemeResultSerializer(),
+			400: "請求錯誤"
+		}
+	)
+  def get(self, request, *args, **kwargs):
+    """
+    取得輸入文字，產生語音並返回 Viseme 嘴形同步數據
+    """
+    
+    text = request.GET.get("text", "")
+    
+    if not text:
+      return Response({"error": "請提供文本內容"}, status=400)
+    
+    output_filename, viseme_data_raw = generate_speech(text, return_viseme=True)
+    
+    print("call Data: ", viseme_data_raw, output_filename)
+    
+    if output_filename is None or viseme_data_raw is None or not viseme_data_raw:
+      return Response({"error": "語音合成失敗，未獲取 Viseme 數據"}, status=500)
+      
+    response = FileResponse(open(output_filename, "rb"), as_attachment=True, filename="tts_output.wav")
+    response["Viseme-Data"] = json.dumps(viseme_data_raw)
+    
+    return response

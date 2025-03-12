@@ -1,4 +1,6 @@
 from django.db import models
+from dataclasses import dataclass
+from typing import List
 
 # Create your models here.
 
@@ -8,3 +10,11 @@ class PronunciationAssessment(models.Model):
 	completeness_score = models.FloatField() # 完整度分數
 	pronunciation_score = models.FloatField() # 總體發音分數
 	errors = models.JSONField(default=list)
+
+class VisemeData(models.Model):
+  viseme_id = models.IntegerField()
+  timestamp = models.DecimalField(max_digits=10, decimal_places=2) #單位：毫秒
+  
+class VisemeResult(models.Model):
+  audio_file = models.FileField(upload_to="viseme_audio/")
+  viseme_data = models.ManyToManyField(VisemeData)
