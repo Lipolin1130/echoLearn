@@ -1,20 +1,15 @@
 import os
 import openai
 
-endpoint =  "https://lipol-m85mbe2y-swedencentral.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview"
-subscription_key = "BXZzIwfzP0UooUNC2YQhZhNgY3IFgH0UcVlyVBbk6yQzktIh9yv5JQQJ99BCACfhMk5XJ3w3AAAAACOGbAZz"
-api_version = "2024-12-01-preview"
-deployment = "gpt-4o"
-
 def get_pronunciation_feedback(pronunciation_result): # PronunciationAssessmentConfig
   
 	client = openai.AzureOpenAI(
-		api_version=api_version,
-		# api_version=os.environ.get("AZURE_OPENAI_VERSION"),
-		azure_endpoint=endpoint,
-		# azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-		api_key=subscription_key,
-		# api_key=os.environ.get("AZURE_OPENAI_API_KEY")
+
+		api_version=os.environ.get("AZURE_OPENAI_VERSION"),
+
+		azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+
+		api_key=os.environ.get("AZURE_OPENAI_KEY")
 	)
 
 	accuracy_score = pronunciation_result.accuracy_score
@@ -63,7 +58,7 @@ def get_pronunciation_feedback(pronunciation_result): # PronunciationAssessmentC
 
 	try:
 			response = client.chat.completions.create(
-					model=deployment,
+					model="gpt-4o",
 					messages=[
 							{"role": "system", "content": "你是一位專業的語音老師，專門協助學生改善發音技巧。"},
 							{"role": "user", "content": prompt}
