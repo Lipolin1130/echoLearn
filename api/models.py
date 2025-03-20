@@ -9,7 +9,7 @@ class PronunciationAssessment(models.Model):
 	fluency_score = models.FloatField() # 流暢度分數
 	completeness_score = models.FloatField() # 完整度分數
 	pronunciation_score = models.FloatField() # 總體發音分數
-	errors = models.JSONField(default=list)
+	suggestion = models.TextField(default="") # 建議
 
 class VisemeData(models.Model):
   viseme_id = models.IntegerField()

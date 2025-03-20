@@ -1,5 +1,7 @@
 import azure.cognitiveservices.speech as speechsdk
+from ..utils.azure_pronunciation_feedback import get_pronunciation_feedback
 import os
+
 
 def evaluate_pronunciation(audio_path, reference_text):
   try:
@@ -28,14 +30,14 @@ def evaluate_pronunciation(audio_path, reference_text):
     if result.reason == speechsdk.ResultReason.RecognizedSpeech:
       pronunciation_result = speechsdk.PronunciationAssessmentResult(result)
       
-      errors = getattr(pronunciation_result, "errors", [])
+      suggestion = get_pronunciation_feedback(pronunciation_result)
       
       return {
 				"accuracy_score": pronunciation_result.accuracy_score,
 				"fluency_score": pronunciation_result.fluency_score,
 				"completeness_score": pronunciation_result.completeness_score,
 				"pronunciation_score": pronunciation_result.pronunciation_score,
-				"errors": errors if errors else []
+				"suggestion": suggestion
 			}
     else:
       return {

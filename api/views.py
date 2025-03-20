@@ -53,8 +53,6 @@ class PronunciationAssessmentView(APIView):
 		full_audio_path = default_storage.path(audio_path)
 		
 		result = evaluate_pronunciation(full_audio_path, reference_text)
-
-  
 		if "error" in result:
 			return Response(result, status=400)
 
