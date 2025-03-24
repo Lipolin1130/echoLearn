@@ -11,6 +11,7 @@ from .serializers import PronunciationAssessmentSerializer, VisemeResultSerializ
 
 from .utils.azure_speech_evaluate import evaluate_pronunciation
 from .utils.azure_speech import generate_speech
+from .utils.azure_speech_to_text import speech_to_text
 import json
 
 class PronunciationAssessmentView(APIView):
@@ -136,3 +137,33 @@ class VisemeSyncView(APIView):
     response["Viseme-Data"] = json.dumps(viseme_data_raw)
     
     return response
+  
+class SpeechToTextView(APIView):
+  parser_classes = (MultiPartParser, FormParser)
+  
+  @swagger_auto_schema(
+		operation_description="上傳音檔並進行語音轉文字",
+		manual_parameters=[
+			openapi.Parameter(
+				'audio', openapi.IN_FORM, description="上傳音檔 (支援格式：wav, mp3)", type=openapi.TYPE_FILE, required=True
+			)
+		],
+		responses={
+			200: openapi.Response("語音辨識成功"),
+			400: "音檔為提供或辨識失敗",
+			500: "伺服器錯誤"
+		}
+	)
+  def post(self, request, *args, **kwargs):
+    
+    audio_file = request.FILES.get('audio')
+    
+    if not audio_file:
+      return Response({"error": "audio is required"}, status=400)
+    
+    audio_path = default_storage.save(f"uploads/{audio_file.name}", ContentFile(audio_file.read()))
+    full_audio_path = default_storage.path(audio_path)
+    
+    result = speech_to_text(full_audio_path)
+    
+    return Response(result, status=200)
