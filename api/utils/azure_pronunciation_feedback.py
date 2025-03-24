@@ -26,7 +26,7 @@ def get_pronunciation_feedback(pronunciation_result): # PronunciationAssessmentC
 		})
   
 	prompt = f"""
-	你是一位專業的語音老師，擅長指導 16 歲以下的學生提升發音能力。請根據學生的發音評估結果提供 **清晰、簡單且具體** 的建議。
+	你是一位專業的語音老師，擅長指導 10 歲以下的學生提升發音能力。請根據學生的發音評估結果提供 **清晰、簡單且具體** 的建議。
 
 	### **整體發音評估**
 	- 準確度: {accuracy_score}
@@ -54,6 +54,8 @@ def get_pronunciation_feedback(pronunciation_result): # PronunciationAssessmentC
 	- 如果學生表現很好，請簡單給予正向回饋，不要強調錯誤。
 	- 你的回應應該清楚、簡單且適合 16 歲以下的學生理解。
 	- **請確保建議句子的長度不超過 50 字，避免使用複雜的專業術語。**
+  - 使用繁體中文回答，並避免使用第二人稱 (你)。
+  - 使用注音的方式提供發音建議，例如：「ㄅㄆㄇㄈ」。禁止使用拼音。
 	"""
 
 	try:
