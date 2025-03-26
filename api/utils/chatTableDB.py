@@ -41,7 +41,7 @@ def get_chat_db(): # 取得 mySQL 中的所有對話紀錄
 	if connection:
 		try:
 			cursor = connection.cursor()
-			query = "select id, user, chatText, timestamp from ChatTable"
+			query = "select id, user, chatText, timestamp from ChatTable order by timestamp DESC LIMIT 10"
 			cursor.execute(query)
 			records = cursor.fetchall()
 			print(records)

@@ -22,13 +22,14 @@ def chat_response(chat_prompt): # 使用 Azure OpenAI 進行對話回覆對話�
 			"role": chat.user,
 			"content": chat.chatText
 		})
+    
   
   try:
     response = client.chat.completions.create(
 			model="gpt-4o",
 			messages=messages,
       temperature=0.7,
-      max_tokens=500
+      max_tokens=50
 		)
     
     reply = response.choices[0].message.content.strip()
