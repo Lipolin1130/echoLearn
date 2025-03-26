@@ -29,7 +29,7 @@ def chat_response(chat_prompt): # 使用 Azure OpenAI 進行對話回覆對話�
 			model="gpt-4o",
 			messages=messages,
       temperature=0.7,
-      max_tokens=50
+      max_tokens=150
 		)
     
     reply = response.choices[0].message.content.strip()
