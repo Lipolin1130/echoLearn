@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import PronunciationAssessment
 from .models import VisemeData, VisemeResult
 from .models import ChatTable
+from .models import Story
 class PronunciationAssessmentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = PronunciationAssessment
@@ -23,3 +24,8 @@ class ChatTableSerializer(serializers.Serializer):
 	class Meta:
 		model = ChatTable
 		fields = '__all__'
+  
+class StorySerializer(serializers.Serializer):
+  class Meta:
+    model = Story
+    fields = '__all__'

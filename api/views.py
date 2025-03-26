@@ -6,13 +6,14 @@ from django.core.files.base import ContentFile
 from django.http import FileResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .models import PronunciationAssessment, VisemeData, VisemeResult, ChatTable
+from .models import PronunciationAssessment, VisemeData, VisemeResult, ChatTable, Story
 from .serializers import PronunciationAssessmentSerializer, VisemeResultSerializer
 from .utils.chatTableDB import add_chat_db, get_chat_db
 from .utils.azure_speech_evaluate import evaluate_pronunciation
 from .utils.azure_speech import generate_speech
 from .utils.azure_speech_to_text import speech_to_text
 from .utils.azure_chat import chat_response
+from .utils.azure_story_generate import story_generate
 import json
 
 class PronunciationAssessmentView(APIView):
@@ -246,4 +247,81 @@ class ChatResponseView(APIView):
         return Response({"error": "無法取得回應"}, status=500)
     except Exception as e:
       return Response({"error": str(e)}, status=500)
-    
+
+class StoryView(APIView):
+  
+	@swagger_auto_schema(
+		operation_description="使用 Azure OpenAI 進行故事生成",
+		manual_parameters=[
+			openapi.Parameter(
+				'character',
+				openapi.IN_QUERY,
+				description="角色名稱",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'style',
+				openapi.IN_QUERY,
+				description="故事風格",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'introduction',
+				openapi.IN_QUERY,
+				description="開頭（起）",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'development',
+				openapi.IN_QUERY,
+				description="發展（承）",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'twist',
+				openapi.IN_QUERY,
+				description="轉折（轉）",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'conclusion',
+				openapi.IN_QUERY,
+				description="結局（合）",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+		],
+		responses={
+			200: "成功生成故事",
+			400: "參數缺失",
+			500: "伺服器錯誤"
+		}
+	)
+	def post(self, request, *args, **kwargs):
+		character = request.query_params.get('character')
+		style = request.query_params.get('style')
+		introduction = request.query_params.get('introduction')
+		development = request.query_params.get('development')
+		twist = request.query_params.get('twist')
+		conclusion = request.query_params.get('conclusion')
+  
+		print("character: ", character, "style: ", style, "introduction: ", introduction, "development: ", development, "twist: ", twist, "conclusion: ", conclusion)
+		
+		if not character or not style or not introduction or not development or not twist or not conclusion:
+			return Response({"error": "character, style, introduction, development, twist, conclusion are required"}, status=400)
+		
+		story = Story(
+			character = character,
+			style = style,
+			introduction = introduction,
+			development = development,
+			twist = twist,
+			conclusion = conclusion
+		)
+		create_story = story_generate(story)
+		return Response({"story": create_story}, status=200)

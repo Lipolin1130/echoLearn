@@ -24,3 +24,11 @@ class ChatTable(models.Model):
   user = models.TextField(default="")
   chatText = models.TextField(default="")
   timestamp = models.DateTimeField()
+  
+class Story(models.Model):
+  character=models.TextField(default="")
+  style=models.TextField(default="")
+  introduction=models.TextField(default="")
+  development=models.TextField(default="")
+  twist=models.TextField(default="")
+  conclusion=models.TextField(default="")
