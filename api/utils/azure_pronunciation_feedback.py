@@ -56,6 +56,7 @@ def get_pronunciation_feedback(pronunciation_result): # PronunciationAssessmentC
 	- **請確保建議句子的長度不超過 50 字，避免使用複雜的專業術語。**
   - 使用繁體中文回答，並避免使用第二人稱 (你)。
   - 使用注音的方式提供發音建議，例如：「ㄅㄆㄇㄈ」。禁止使用拼音。
+  - 在 500 字內的建議。
 	"""
 
 	try:

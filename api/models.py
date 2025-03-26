@@ -18,3 +18,9 @@ class VisemeData(models.Model):
 class VisemeResult(models.Model):
   audio_file = models.FileField(upload_to="viseme_audio/")
   viseme_data = models.ManyToManyField(VisemeData)
+  
+class ChatTable(models.Model):
+  id = models.AutoField(primary_key=True)
+  user = models.TextField(default="")
+  chatText = models.TextField(default="")
+  timestamp = models.DateTimeField()

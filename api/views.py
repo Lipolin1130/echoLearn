@@ -6,12 +6,13 @@ from django.core.files.base import ContentFile
 from django.http import FileResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .models import PronunciationAssessment, VisemeData, VisemeResult
+from .models import PronunciationAssessment, VisemeData, VisemeResult, ChatTable
 from .serializers import PronunciationAssessmentSerializer, VisemeResultSerializer
-
+from .utils.chatTableDB import add_chat_db, get_chat_db
 from .utils.azure_speech_evaluate import evaluate_pronunciation
 from .utils.azure_speech import generate_speech
 from .utils.azure_speech_to_text import speech_to_text
+from .utils.azure_chat import chat_response
 import json
 
 class PronunciationAssessmentView(APIView):
@@ -95,9 +96,6 @@ class TextToSpeechView(APIView):
       return Response({"error": "語音合成失敗"}, status=500)
     
 class VisemeSyncView(APIView):
-  """
-  產生語音並返回 Viseme (嘴形動畫同步數據)
-  """
   
   @swagger_auto_schema(
 		operation_summary="文字轉語音 + Viseme 嘴形同步",
@@ -167,3 +165,85 @@ class SpeechToTextView(APIView):
     result = speech_to_text(full_audio_path)
     
     return Response(result, status=200)
+  
+class ChatTableView(APIView):
+  @swagger_auto_schema(
+		operation_description="取得所有聊天紀錄"
+	)
+  def get(self, request):
+    try:
+      chat_list = get_chat_db()
+      data = []
+      for chat in chat_list:
+        data.append({
+					"id": chat.id,
+					"user": chat.user,
+					"chatText": chat.chatText,
+					"timestamp": chat.timestamp
+				})
+      return Response(data, status=200)
+    except Exception as e:
+      return Response({"error": str(e)}, status=500)
+  
+  @swagger_auto_schema(
+		operation_summary="新增一筆聊天紀錄",
+		manual_parameters=[
+			openapi.Parameter(
+				'user',
+				openapi.IN_QUERY,
+				description="使用者名稱 ex: (assistant, user), AI, 使用者",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+			openapi.Parameter(
+				'chatText',
+				openapi.IN_QUERY,
+				description="聊天內容",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+		],
+		responses={
+				201: "對話紀錄新增成功",
+				400: "參數缺失",
+				500: "伺服器錯誤"
+		}
+	)
+  def post(self, request, *args, **kwargs):
+    user = request.query_params.get("user")
+    chatText = request.query_params.get("chatText")
+    print("user: ", user, "chatText: ", chatText)
+    if not user or not chatText:
+      return Response({"error": "user and chatText are required"}, status=400)
+    
+    try:
+      add_chat_db(user, chatText)
+      return Response({"message": "對話紀錄已成功新增"}, status=200)
+    except Exception as e:
+      return Response({"error": str(e)}, status=500)
+    
+class ChatResponseView(APIView):
+  
+  @swagger_auto_schema(
+		operation_description="使用 Azure OpenAI 進行對話回覆，不用新增對話紀錄到資料庫，後端處理",
+		manual_parameters=[
+			openapi.Parameter(
+				'chat_prompt',
+				openapi.IN_QUERY,
+				description="使用者輸入內容",
+				type=openapi.TYPE_STRING,
+				required=True
+			),
+		],
+	)
+  def post(self, request, *args, **kwargs):
+    try:
+      chat_prompt = request.query_params.get('chat_prompt')
+      response = chat_response(chat_prompt)
+      if response:
+        return Response({"response": response}, status=200)
+      else:
+        return Response({"error": "無法取得回應"}, status=500)
+    except Exception as e:
+      return Response({"error": str(e)}, status=500)
+    
