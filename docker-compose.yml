@@ -17,7 +17,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./DeafLearning:/src
+      - ./DeafLearning:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
     command: ["npm", "start"]
@@ -27,7 +28,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./DeafLearning:/app
+      - ./DeafLearning/app:/app
     environment:
       - FLASK_APP=app.py
-    command: ["python", "app.py"]
+    command: ["python", "app.py"] 
